@@ -513,7 +513,12 @@ export const HomePage: React.FC = () => {
 
           <div className="shrink-0 flex flex-col sm:flex-row gap-3 w-full md:w-auto">
             <a
-              href={import.meta.env.VITE_SELLER_URL || 'http://localhost:5174'}
+              href={
+                import.meta.env.VITE_SELLER_URL ||
+                (import.meta.env.PROD
+                  ? 'https://kumorpara-sellerstudio.onrender.com'
+                  : 'http://localhost:5174')
+              }
               target="_blank"
               rel="noreferrer"
               className="w-full sm:w-auto"

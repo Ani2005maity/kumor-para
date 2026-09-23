@@ -44,7 +44,12 @@ export const Header: React.FC<HeaderProps> = ({
 
         {seller?.slug && (
           <a
-            href={`${import.meta.env.VITE_CUSTOMER_URL || 'http://localhost:5173'}/shop/${seller.slug}`}
+            href={`${
+              import.meta.env.VITE_CUSTOMER_URL ||
+              (import.meta.env.PROD
+                ? 'https://kumorpara.onrender.com'
+                : 'http://localhost:5173')
+            }/shop/${seller.slug}`}
             target="_blank"
             rel="noopener noreferrer"
             className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-charcoal-700 bg-stone-warm-100 hover:bg-stone-warm-200 rounded-xl transition-colors"

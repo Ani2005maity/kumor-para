@@ -18,7 +18,9 @@ export class ApiError extends Error {
   }
 }
 
-const BASE_URL = import.meta.env.VITE_API_URL || '/api';
+const BASE_URL =
+  import.meta.env.VITE_API_URL ||
+  (import.meta.env.PROD ? 'https://kumor-para-api.onrender.com/api' : '/api');
 
 async function fetchWithEnvelope<T>(
   endpoint: string,

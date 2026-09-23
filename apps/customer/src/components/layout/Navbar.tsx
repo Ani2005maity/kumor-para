@@ -77,7 +77,12 @@ export const Navbar: React.FC = () => {
             <div className="flex items-center gap-3">
               {/* Creator Portal External Link */}
               <a
-                href={import.meta.env.VITE_SELLER_URL || 'http://localhost:5174'}
+                href={
+                  import.meta.env.VITE_SELLER_URL ||
+                  (import.meta.env.PROD
+                    ? 'https://kumorpara-sellerstudio.onrender.com'
+                    : 'http://localhost:5174')
+                }
                 target="_blank"
                 rel="noreferrer"
                 className="hidden lg:inline-flex items-center gap-1.5 text-xs font-semibold text-terracotta-700 hover:text-terracotta-800 bg-terracotta-50 hover:bg-terracotta-100/80 px-3.5 py-2 rounded-xl border border-terracotta-200/60 transition-colors"
@@ -243,7 +248,12 @@ export const Navbar: React.FC = () => {
 
             <div className="border-t border-stone-warm-100 pt-3">
               <a
-                href={import.meta.env.VITE_SELLER_URL || 'http://localhost:5174'}
+                href={
+                  import.meta.env.VITE_SELLER_URL ||
+                  (import.meta.env.PROD
+                    ? 'https://kumorpara-sellerstudio.onrender.com'
+                    : 'http://localhost:5174')
+                }
                 target="_blank"
                 rel="noreferrer"
                 className="block text-center py-2.5 text-xs font-bold text-terracotta-700 bg-terracotta-50 rounded-xl border border-terracotta-200"

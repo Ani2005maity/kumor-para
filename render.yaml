@@ -1,4 +1,5 @@
 services:
+  # Backend API Web Service
   - type: web
     name: kumor-para-api
     runtime: node
@@ -26,14 +27,67 @@ services:
       - key: EMAIL_FROM
         sync: false
       - key: CORS_ORIGIN_CUSTOMER
-        sync: false
+        value: https://kumorpara.onrender.com
       - key: CORS_ORIGIN_SELLER
-        sync: false
+        value: https://kumorpara-sellerstudio.onrender.com
       - key: CORS_ORIGIN_ADMIN
-        sync: false
+        value: https://kumorpara-admin.onrender.com
       - key: CLOUDINARY_CLOUD_NAME
         sync: false
       - key: CLOUDINARY_API_KEY
         sync: false
       - key: CLOUDINARY_API_SECRET
         sync: false
+
+  # Customer Marketplace Frontend Static Site
+  - type: static
+    name: kumorpara-customer
+    plan: free
+    region: singapore
+    buildCommand: npm --workspace=@kumorpara/customer run build
+    staticPublishPath: ./apps/customer/dist
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
+    envVars:
+      - key: VITE_API_URL
+        value: https://kumor-para-api.onrender.com/api
+      - key: VITE_SELLER_URL
+        value: https://kumorpara-sellerstudio.onrender.com
+
+  # Seller Studio Frontend Static Site
+  - type: static
+    name: kumorpara-seller
+    plan: free
+    region: singapore
+    buildCommand: npm --workspace=@kumorpara/seller run build
+    staticPublishPath: ./apps/seller/dist
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
+    envVars:
+      - key: VITE_API_URL
+        value: https://kumor-para-api.onrender.com/api
+      - key: VITE_CUSTOMER_URL
+        value: https://kumorpara.onrender.com
+
+  # Admin Console Frontend Static Site
+  - type: static
+    name: kumorpara-admin
+    plan: free
+    region: singapore
+    buildCommand: npm --workspace=@kumorpara/admin run build
+    staticPublishPath: ./apps/admin/dist
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
+    envVars:
+      - key: VITE_API_URL
+        value: https://kumor-para-api.onrender.com/api
+      - key: VITE_CUSTOMER_URL
+        value: https://kumorpara.onrender.com
+      - key: VITE_SELLER_URL
+        value: https://kumorpara-sellerstudio.onrender.com

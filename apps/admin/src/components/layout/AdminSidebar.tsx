@@ -108,7 +108,12 @@ export const AdminSidebar: React.FC = () => {
         </p>
 
         <a
-          href={import.meta.env.VITE_CUSTOMER_URL || 'http://localhost:5173'}
+          href={
+            import.meta.env.VITE_CUSTOMER_URL ||
+            (import.meta.env.PROD
+              ? 'https://kumorpara.onrender.com'
+              : 'http://localhost:5173')
+          }
           target="_blank"
           rel="noreferrer"
           className="flex items-center justify-between px-3 py-2 rounded-xl text-xs text-admin-400 hover:text-white hover:bg-admin-800 transition-colors"
@@ -121,7 +126,12 @@ export const AdminSidebar: React.FC = () => {
         </a>
 
         <a
-          href={import.meta.env.VITE_SELLER_URL || 'http://localhost:5174'}
+          href={
+            import.meta.env.VITE_SELLER_URL ||
+            (import.meta.env.PROD
+              ? 'https://kumorpara-sellerstudio.onrender.com'
+              : 'http://localhost:5174')
+          }
           target="_blank"
           rel="noreferrer"
           className="flex items-center justify-between px-3 py-2 rounded-xl text-xs text-admin-400 hover:text-white hover:bg-admin-800 transition-colors"
