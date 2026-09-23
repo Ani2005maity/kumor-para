@@ -333,10 +333,10 @@ export async function getSellerOrders(
     const skip = (page - 1) * limit;
 
     const filter: any = { sellerId };
-    if (req.query.status) {
+    if (req.query.status && req.query.status !== 'all') {
       filter.status = req.query.status;
     }
-    if (req.query.settlementStatus) {
+    if (req.query.settlementStatus && req.query.settlementStatus !== 'all') {
       filter.settlementStatus = req.query.settlementStatus;
     }
 
@@ -515,7 +515,7 @@ export async function getAdminOrders(
     const skip = (page - 1) * limit;
 
     const filter: any = {};
-    if (req.query.paymentStatus) {
+    if (req.query.paymentStatus && req.query.paymentStatus !== 'all') {
       filter.paymentStatus = req.query.paymentStatus;
     }
     if (req.query.search) {

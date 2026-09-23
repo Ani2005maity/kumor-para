@@ -156,7 +156,7 @@ export async function getAdminSellers(
     const skip = (page - 1) * limit;
 
     const filter: any = {};
-    if (req.query.status) {
+    if (req.query.status && req.query.status !== 'all') {
       filter.status = req.query.status;
     }
     if (req.query.search) {

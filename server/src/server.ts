@@ -34,6 +34,9 @@ const defaultOrigins = [
   'http://localhost:5173',
   'http://localhost:5174',
   'http://localhost:5175',
+  'https://kumorpara.onrender.com',
+  'https://kumorpara-sellerstudio.onrender.com',
+  'https://kumorpara-admin.onrender.com',
 ];
 
 const allowedOrigins = rawOrigins.length > 0

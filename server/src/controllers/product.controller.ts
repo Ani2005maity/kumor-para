@@ -220,7 +220,7 @@ export async function getSellerProducts(
 
     const filter: any = { sellerId };
 
-    if (req.query.status) {
+    if (req.query.status && req.query.status !== 'all') {
       filter.status = req.query.status;
     }
 
@@ -534,7 +534,7 @@ export async function getAdminProducts(
     const skip = (page - 1) * limit;
 
     const filter: any = {};
-    if (req.query.status) {
+    if (req.query.status && req.query.status !== 'all') {
       filter.status = req.query.status;
     }
     if (req.query.sellerId) {

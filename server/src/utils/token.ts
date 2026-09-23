@@ -43,7 +43,9 @@ export function setAuthCookies(
 ): void {
   const isProduction = process.env.NODE_ENV === 'production';
   const domain = process.env.COOKIE_DOMAIN || undefined;
-  const sameSite = (process.env.COOKIE_SAME_SITE as 'strict' | 'lax' | 'none') || (isProduction ? 'lax' : 'lax');
+  const sameSite =
+    (process.env.COOKIE_SAME_SITE as 'strict' | 'lax' | 'none') ||
+    (isProduction ? 'none' : 'lax');
 
   // 15 minutes in ms
   const accessTokenMaxAge = 15 * 60 * 1000;
@@ -72,7 +74,9 @@ export function setAuthCookies(
 export function clearAuthCookies(res: Response): void {
   const isProduction = process.env.NODE_ENV === 'production';
   const domain = process.env.COOKIE_DOMAIN || undefined;
-  const sameSite = (process.env.COOKIE_SAME_SITE as 'strict' | 'lax' | 'none') || (isProduction ? 'lax' : 'lax');
+  const sameSite =
+    (process.env.COOKIE_SAME_SITE as 'strict' | 'lax' | 'none') ||
+    (isProduction ? 'none' : 'lax');
 
   res.clearCookie('accessToken', {
     httpOnly: true,
