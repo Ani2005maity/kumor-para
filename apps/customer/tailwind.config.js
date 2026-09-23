@@ -1,0 +1,71 @@
+/** @type {import('tailwindcss').Config} */
+export default {
+  content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
+  theme: {
+    extend: {
+      colors: {
+        terracotta: {
+          50: '#FDF6F3',
+          100: '#FBEBE5',
+          200: '#F6D3C5',
+          300: '#EEB39C',
+          400: '#E3886A',
+          500: '#C85A32',
+          600: '#B84A22',
+          700: '#963816',
+          800: '#7B2E14',
+          900: '#642713',
+        },
+        'stone-warm': {
+          50: '#FDFCFB',
+          100: '#FBF9F5',
+          200: '#F5F2EB',
+          300: '#EBE5D8',
+          400: '#D8CEBC',
+          500: '#B8A992',
+          600: '#8E7E66',
+          700: '#685B49',
+          800: '#4D4235',
+          900: '#312A22',
+        },
+        ochre: {
+          50: '#FEF9EC',
+          100: '#FDF1CE',
+          200: '#FBE29D',
+          300: '#F7CE63',
+          400: '#F1B52D',
+          500: '#D97706',
+          600: '#B45309',
+          700: '#92400E',
+        },
+        charcoal: {
+          50: '#F6F6F6',
+          100: '#E7E7E7',
+          200: '#D1D1D1',
+          300: '#B0B0B0',
+          400: '#888888',
+          500: '#6D6D6D',
+          600: '#5D5D5D',
+          700: '#4F4F4F',
+          800: '#454545',
+          900: '#1C1917',
+        },
+      },
+      fontFamily: {
+        sans: ['"Plus Jakarta Sans"', 'Inter', 'system-ui', 'sans-serif'],
+        display: ['"Outfit"', '"Plus Jakarta Sans"', 'sans-serif'],
+      },
+      boxShadow: {
+        'warm-sm': '0 1px 2px 0 rgba(49, 42, 34, 0.05)',
+        'warm-md': '0 4px 6px -1px rgba(49, 42, 34, 0.08), 0 2px 4px -2px rgba(49, 42, 34, 0.05)',
+        'warm-lg': '0 10px 15px -3px rgba(49, 42, 34, 0.08), 0 4px 6px -4px rgba(49, 42, 34, 0.04)',
+        'warm-xl': '0 20px 25px -5px rgba(49, 42, 34, 0.1), 0 8px 10px -6px rgba(49, 42, 34, 0.05)',
+      },
+      borderRadius: {
+        '2xl': '1rem',
+        '3xl': '1.5rem',
+      },
+    },
+  },
+  plugins: [],
+};

@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>{{docTitle}} - {{invoiceNumber}}</title>
+  <style>
+    @page { size: A4 portrait; margin: 15mm; }
+    * { box-sizing: border-box; -webkit-print-color-adjust: exact; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      color: #1f2937;
+      background: #ffffff;
+      margin: 0;
+      padding: 24px;
+      font-size: 13px;
+      line-height: 1.4;
+    }
+    .invoice-container { max-width: 800px; margin: 0 auto; }
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      border-bottom: 2px solid #e5e7eb;
+      padding-bottom: 16px;
+      margin-bottom: 20px;
+    }
+    .brand h1 {
+      margin: 0;
+      color: #92400e; /* warm terracotta/earth tone */
+      font-size: 24px;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+    }
+    .brand p { margin: 2px 0 0; color: #6b7280; font-size: 11px; }
+    .doc-meta { text-align: right; }
+    .doc-badge {
+      display: inline-block;
+      padding: 4px 10px;
+      background: #fef3c7;
+      color: #92400e;
+      font-weight: 700;
+      font-size: 14px;
+      border-radius: 4px;
+      margin-bottom: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .meta-row { font-size: 12px; color: #4b5563; margin-top: 2px; }
+    .meta-row strong { color: #111827; }
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin-bottom: 20px;
+    }
+    .card {
+      background: #f9fafb;
+      border: 1px solid #e5e7eb;
+      border-radius: 6px;
+      padding: 12px 14px;
+    }
+    .card-title {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: #6b7280;
+      margin-bottom: 6px;
+      border-bottom: 1px solid #e5e7eb;
+      padding-bottom: 4px;
+    }
+    .card p { margin: 2px 0; font-size: 12px; }
+    .card strong { color: #111827; font-size: 13px; }
+    table.line-items {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 20px;
+    }
+    table.line-items th {
+      background: #f3f4f6;
+      color: #374151;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      text-align: left;
+      padding: 8px 10px;
+      border-top: 1px solid #e5e7eb;
+      border-bottom: 1px solid #e5e7eb;
+    }
+    table.line-items td {
+      padding: 8px 10px;
+      border-bottom: 1px solid #f3f4f6;
+      font-size: 12px;
+    }
+    .text-right { text-align: right; }
+    .text-center { text-align: center; }
+    .totals-area {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 24px;
+    }
+    .amount-words {
+      width: 55%;
+      background: #fdf8f6;
+      border: 1px solid #fed7aa;
+      border-radius: 6px;
+      padding: 10px 12px;
+      font-size: 12px;
+    }
+    .amount-words span { color: #9a3412; font-weight: 600; display: block; margin-top: 2px; }
+    .totals-table { width: 40%; }
+    .totals-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 4px 0;
+      font-size: 12px;
+      color: #4b5563;
+    }
+    .totals-row.grand-total {
+      border-top: 2px solid #e5e7eb;
+      border-bottom: 2px solid #e5e7eb;
+      padding: 8px 0;
+      margin-top: 6px;
+      font-size: 15px;
+      font-weight: 800;
+      color: #111827;
+    }
+    .footer {
+      border-top: 1px solid #e5e7eb;
+      padding-top: 12px;
+      text-align: center;
+      color: #6b7280;
+      font-size: 11px;
+    }
+    .status-cancelled {
+      color: #dc2626;
+      border: 2px solid #dc2626;
+      padding: 6px 16px;
+      font-size: 16px;
+      font-weight: 800;
+      text-transform: uppercase;
+      border-radius: 4px;
+      display: inline-block;
+      margin-bottom: 12px;
+    }
+  </style>
+</head>
+<body>
+  <div class="invoice-container">
+    {{#if isCancelled}}
+    <div style="text-align: center;">
+      <div class="status-cancelled">CANCELLED — REPLACED BY CREDIT NOTE</div>
+    </div>
+    {{/if}}
+
+    <div class="header">
+      <div class="brand">
+        <h1>Kumor Para</h1>
+        <p>Marketplace for Handmade Goods by Independent Indian Creators</p>
+      </div>
+      <div class="doc-meta">
+        <div class="doc-badge">{{docTitle}}</div>
+        <div class="meta-row"><strong>Invoice No:</strong> {{invoiceNumber}}</div>
+        <div class="meta-row"><strong>Date:</strong> {{formattedDate}}</div>
+        <div class="meta-row"><strong>Order Ref:</strong> {{orderNumber}}</div>
+        <div class="meta-row"><strong>Financial Year:</strong> {{financialYear}}</div>
+        <div class="meta-row"><strong>Place of Supply:</strong> {{placeOfSupplyStateCode}}</div>
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-title">Sold By (Supplier)</div>
+        <p><strong>{{supplierSnapshot.name}}</strong></p>
+        <p>{{supplierAddressString}}</p>
+        <p>Phone: {{supplierSnapshot.phone}} | Email: {{supplierSnapshot.email}}</p>
+        {{#if hasGstin}}
+        <p><strong>GSTIN:</strong> {{supplierSnapshot.gstin}}</p>
+        {{else}}
+        <p style="color: #6b7280; font-style: italic;">Composition / Non-GST Registered Creator</p>
+        {{/if}}
+      </div>
+
+      <div class="card">
+        <div class="card-title">Billed & Shipped To</div>
+        <p><strong>{{buyerSnapshot.name}}</strong></p>
+        <p>{{buyerShippingString}}</p>
+        <p>Phone: {{buyerSnapshot.phone}} | Email: {{buyerSnapshot.email}}</p>
+        <p><strong>State Code:</strong> {{placeOfSupplyStateCode}}</p>
+      </div>
+    </div>
+
+    <table class="line-items">
+      <thead>
+        <tr>
+          <th style="width: 5%;">#</th>
+          <th style="width: 35%;">Item Description</th>
+          {{#if hasGstin}}<th class="text-center" style="width: 10%;">HSN</th>{{/if}}
+          <th class="text-center" style="width: 8%;">Qty</th>
+          <th class="text-right" style="width: 12%;">Unit Price</th>
+          <th class="text-right" style="width: 12%;">Taxable Val</th>
+          {{#if hasGstin}}
+            {{#if isIntraState}}
+              <th class="text-right" style="width: 9%;">CGST</th>
+              <th class="text-right" style="width: 9%;">SGST</th>
+            {{else}}
+              <th class="text-right" style="width: 18%;">IGST</th>
+            {{/if}}
+          {{/if}}
+          <th class="text-right" style="width: 12%;">Total</th>
+        </tr>
+      </thead>
+      <tbody>
+        {{#each lineItems}}
+        <tr>
+          <td>{{index}}</td>
+          <td>
+            <strong>{{title}}</strong>
+            {{#if customisationNote}}<div style="font-size: 11px; color: #6b7280;">Note: {{customisationNote}}</div>{{/if}}
+          </td>
+          {{#if ../hasGstin}}<td class="text-center">{{hsnCode}}</td>{{/if}}
+          <td class="text-center">{{qty}}</td>
+          <td class="text-right">{{unitPriceFormatted}}</td>
+          <td class="text-right">{{taxableValueFormatted}}</td>
+          {{#if ../hasGstin}}
+            {{#if ../isIntraState}}
+              <td class="text-right">{{cgstFormatted}} ({{halfRate}}%)</td>
+              <td class="text-right">{{sgstFormatted}} ({{halfRate}}%)</td>
+            {{else}}
+              <td class="text-right">{{igstFormatted}} ({{gstRate}}%)</td>
+            {{/if}}
+          {{/if}}
+          <td class="text-right"><strong>{{lineTotalFormatted}}</strong></td>
+        </tr>
+        {{/each}}
+      </tbody>
+    </table>
+
+    <div class="totals-area">
+      <div class="amount-words">
+        <div>Total Amount in Words:</div>
+        <span>{{amountInWords}}</span>
+      </div>
+
+      <div class="totals-table">
+        <div class="totals-row">
+          <span>Taxable Amount:</span>
+          <span>{{taxableTotalFormatted}}</span>
+        </div>
+        {{#if hasGstin}}
+          {{#if isIntraState}}
+          <div class="totals-row">
+            <span>CGST:</span>
+            <span>{{cgstTotalFormatted}}</span>
+          </div>
+          <div class="totals-row">
+            <span>SGST:</span>
+            <span>{{sgstTotalFormatted}}</span>
+          </div>
+          {{else}}
+          <div class="totals-row">
+            <span>IGST:</span>
+            <span>{{igstTotalFormatted}}</span>
+          </div>
+          {{/if}}
+        {{/if}}
+        <div class="totals-row">
+          <span>Delivery Charge:</span>
+          <span>{{deliveryChargeFormatted}}</span>
+        </div>
+        <div class="totals-row grand-total">
+          <span>Grand Total:</span>
+          <span>{{grandTotalFormatted}}</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer">
+      <p>This invoice is issued by Kumor Para on behalf of the supplier (seller) who owns and fulfills the goods.</p>
+      <p style="font-size: 10px; color: #9ca3af; margin-top: 4px;">Terms: Handmade artisanal items. Kumor Para acts as an electronic marketplace intermediary.</p>
+    </div>
+  </div>
+</body>
+</html>

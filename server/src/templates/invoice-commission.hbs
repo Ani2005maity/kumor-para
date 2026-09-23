@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Platform Commission Invoice - {{invoiceNumber}}</title>
+  <style>
+    @page { size: A4 portrait; margin: 15mm; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; color: #1f2937; padding: 24px; font-size: 13px; }
+    .invoice-container { max-width: 800px; margin: 0 auto; }
+    .header { display: flex; justify-content: space-between; border-bottom: 2px solid #e5e7eb; padding-bottom: 16px; margin-bottom: 20px; }
+    .brand h1 { margin: 0; color: #92400e; font-size: 24px; font-weight: 800; }
+    .doc-badge { display: inline-block; padding: 4px 10px; background: #e0e7ff; color: #3730a3; font-weight: 700; font-size: 14px; border-radius: 4px; }
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; }
+    .card { background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 6px; padding: 12px; }
+    table.line-items { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+    table.line-items th { background: #f3f4f6; padding: 8px 10px; font-size: 11px; text-align: left; }
+    table.line-items td { padding: 8px 10px; border-bottom: 1px solid #f3f4f6; font-size: 12px; }
+    .text-right { text-align: right; }
+    .totals-area { display: flex; justify-content: space-between; margin-bottom: 24px; }
+    .amount-words { width: 55%; background: #fdf8f6; padding: 10px; border-radius: 6px; }
+    .totals-table { width: 40%; }
+    .totals-row { display: flex; justify-content: space-between; padding: 4px 0; }
+    .totals-row.grand-total { font-weight: 800; font-size: 15px; border-top: 2px solid #e5e7eb; padding-top: 6px; }
+    .footer { text-align: center; color: #6b7280; font-size: 11px; border-top: 1px solid #e5e7eb; padding-top: 12px; }
+  </style>
+</head>
+<body>
+  <div class="invoice-container">
+    <div class="header">
+      <div class="brand">
+        <h1>Kumor Para Marketplace</h1>
+        <p>Kumor Para E-Commerce Services Pvt Ltd</p>
+      </div>
+      <div style="text-align: right;">
+        <div class="doc-badge">COMMISSION INVOICE</div>
+        <div style="margin-top: 6px;"><strong>Invoice No:</strong> {{invoiceNumber}}</div>
+        <div><strong>Date:</strong> {{formattedDate}}</div>
+        <div><strong>Settlement Period:</strong> {{settlementPeriod}}</div>
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <div class="card">
+        <div style="font-size: 11px; font-weight: 700; color: #6b7280; text-transform: uppercase;">Service Provider</div>
+        <p><strong>Kumor Para E-Commerce Services Pvt Ltd</strong></p>
+        <p>108 Artisans Way, Salt Lake Sector V, Kolkata, WB 700091</p>
+        <p><strong>GSTIN:</strong> 19AABCK1234F1Z0 | <strong>PAN:</strong> AABCK1234F</p>
+      </div>
+      <div class="card">
+        <div style="font-size: 11px; font-weight: 700; color: #6b7280; text-transform: uppercase;">Artisan Partner (Client)</div>
+        <p><strong>{{seller.legalName}} ({{seller.shopName}})</strong></p>
+        <p>{{sellerAddress}}</p>
+        {{#if seller.gstin}}<p><strong>GSTIN:</strong> {{seller.gstin}}</p>{{/if}}
+      </div>
+    </div>
+
+    <table class="line-items">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Order Ref</th>
+          <th>Delivered Date</th>
+          <th class="text-right">Order GMV</th>
+          <th class="text-right">Commission Rate</th>
+          <th class="text-right">Platform Fee</th>
+        </tr>
+      </thead>
+      <tbody>
+        {{#each lineItems}}
+        <tr>
+          <td>{{index}}</td>
+          <td>{{orderRef}}</td>
+          <td>{{deliveredDate}}</td>
+          <td class="text-right">{{gmvFormatted}}</td>
+          <td class="text-right">{{commissionRate}}%</td>
+          <td class="text-right"><strong>{{commissionFormatted}}</strong></td>
+        </tr>
+        {{/each}}
+      </tbody>
+    </table>
+
+    <div class="totals-area">
+      <div class="amount-words">
+        <div>Total Platform Fee in Words:</div>
+        <strong style="color: #4338ca;">{{amountInWords}}</strong>
+      </div>
+      <div class="totals-table">
+        <div class="totals-row">
+          <span>Total Commission Fee:</span>
+          <span>{{taxableTotalFormatted}}</span>
+        </div>
+        <div class="totals-row">
+          <span>GST (18% on Marketplace Fee):</span>
+          <span>{{taxTotalFormatted}}</span>
+        </div>
+        <div class="totals-row grand-total">
+          <span>Total Invoice Value:</span>
+          <span>{{grandTotalFormatted}}</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer">
+      <p>Kumor Para electronic marketplace service commission statement. This is a computer-generated tax invoice.</p>
+    </div>
+  </div>
+</body>
+</html>

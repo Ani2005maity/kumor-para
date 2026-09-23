@@ -1,0 +1,30 @@
+{
+  "name": "kumor-para-monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Kumor Para — Handmade goods marketplace for independent Indian creators",
+  "workspaces": [
+    "packages/*",
+    "server",
+    "apps/*"
+  ],
+  "scripts": {
+    "dev:server": "npm --workspace=server run dev",
+    "dev:seller": "npm --workspace=@kumorpara/seller run dev",
+    "dev:customer": "npm --workspace=@kumorpara/customer run dev",
+    "dev:admin": "npm --workspace=@kumorpara/admin run dev",
+    "build": "npm --workspaces run build",
+    "build:server": "npm --workspace=@kumorpara/shared run build && npm --workspace=kumor-para-server run build",
+    "start:server": "npm --workspace=kumor-para-server start",
+    "seed": "npm --workspace=server run seed",
+    "lint": "npm --workspaces run lint"
+  },
+  "keywords": [
+    "marketplace",
+    "handmade",
+    "ecommerce",
+    "crafts"
+  ],
+  "author": "Kumor Para Team",
+  "license": "ISC"
+}

@@ -1,0 +1,50 @@
+{
+  "name": "kumor-para-server",
+  "version": "1.0.0",
+  "description": "Backend API for Kumor Para Marketplace",
+  "type": "module",
+  "main": "dist/server.js",
+  "scripts": {
+    "dev": "tsx watch src/server.ts",
+    "build": "tsc",
+    "start": "node dist/server.js",
+    "seed": "tsx src/seed.ts",
+    "test:auth": "tsx src/test/auth.test.ts",
+    "test:catalog": "tsx src/test/catalog.test.ts",
+    "test:order": "tsx src/test/order.test.ts",
+    "test:invoice": "tsx src/test/invoice.test.ts",
+    "test:otp": "tsx src/test/otp.test.ts",
+    "test": "tsx src/test/auth.test.ts && tsx src/test/catalog.test.ts && tsx src/test/order.test.ts && tsx src/test/invoice.test.ts && tsx src/test/otp.test.ts"
+  },
+  "dependencies": {
+    "@kumorpara/shared": "*",
+    "bcryptjs": "^2.4.3",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "express-rate-limit": "^7.5.0",
+    "handlebars": "^4.7.8",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.9.5",
+    "nodemailer": "^10.0.10",
+    "pdfkit": "^0.20.2",
+    "zod": "^3.24.1"
+  },
+  "devDependencies": {
+    "@types/bcryptjs": "^2.4.6",
+    "@types/cookie-parser": "^1.4.8",
+    "@types/cors": "^2.8.17",
+    "@types/express": "^4.17.21",
+    "@types/handlebars": "^4.1.0",
+    "@types/jsonwebtoken": "^9.0.7",
+    "@types/node": "^22.10.7",
+    "@types/nodemailer": "^8.0.2",
+    "@types/pdfkit": "^0.17.6",
+    "@types/supertest": "^6.0.2",
+    "mongodb-memory-server": "^10.4.3",
+    "supertest": "^7.0.0",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.3"
+  }
+}

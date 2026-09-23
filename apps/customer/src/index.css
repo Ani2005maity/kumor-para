@@ -1,0 +1,52 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-[#FAF8F5] text-charcoal-900;
+  }
+}
+
+@layer utilities {
+  .bg-radial-hero {
+    background: radial-gradient(circle at 50% 20%, rgba(251, 235, 229, 0.8) 0%, rgba(250, 248, 245, 1) 75%);
+  }
+
+  .bg-radial-craft {
+    background: radial-gradient(circle at 10% 20%, rgba(251, 235, 229, 0.6) 0%, rgba(255, 253, 249, 1) 90%);
+  }
+
+  .glass-header {
+    background: rgba(250, 248, 245, 0.85);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-bottom: 1px solid rgba(231, 226, 217, 0.7);
+  }
+
+  .glass-card {
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(231, 226, 217, 0.8);
+  }
+}
+
+/* Custom scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #d8cebc;
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #b8a992;
+}
