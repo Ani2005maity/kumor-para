@@ -17,7 +17,6 @@ import { api } from '../../lib/api';
 import { formatINR, LAUNCH_CATEGORIES } from '../../lib/utils';
 import { Button } from '../../components/common/Button';
 import { Badge } from '../../components/common/Badge';
-import { Card } from '../../components/common/Card';
 import { useCartStore } from '../../store/useCartStore';
 
 interface ProductItem {
@@ -36,6 +35,8 @@ interface ProductItem {
     shopName: string;
     slug: string;
     location?: string;
+    bio?: string;
+    logoUrl?: string;
   };
   categoryId?: {
     name: string;
@@ -43,10 +44,22 @@ interface ProductItem {
   };
 }
 
+interface SellerItem {
+  _id: string;
+  shopName: string;
+  slug: string;
+  location?: string;
+  bio?: string;
+  logoUrl?: string;
+  bannerUrl?: string;
+  rating?: number;
+  totalSales?: number;
+}
+
 export const HomePage: React.FC = () => {
   const { addItem } = useCartStore();
 
-  // Fetch Featured Creations
+  // Fetch Featured Creations from API
   const { data: featuredData, isLoading: isFeaturedLoading } = useQuery({
     queryKey: ['featured-products'],
     queryFn: async () => {
@@ -55,12 +68,21 @@ export const HomePage: React.FC = () => {
     },
   });
 
-  // Fetch Recent Approved Catalog
+  // Fetch Recent Approved Catalog from API
   const { data: catalogData } = useQuery({
     queryKey: ['home-catalog'],
     queryFn: async () => {
       const res = await api.get<{ products: ProductItem[] }>('/products?limit=8&sortBy=newest');
       return res?.products || [];
+    },
+  });
+
+  // Fetch Approved Artisan Studios from API
+  const { data: sellersData, isLoading: isSellersLoading } = useQuery({
+    queryKey: ['home-sellers'],
+    queryFn: async () => {
+      const res = await api.get<{ sellers: SellerItem[] }>('/sellers?limit=6');
+      return res?.sellers || [];
     },
   });
 
@@ -70,6 +92,26 @@ export const HomePage: React.FC = () => {
       : catalogData && catalogData.length > 0
       ? catalogData
       : [];
+
+  const topFeaturedProduct =
+    featuredData && featuredData.length > 0
+      ? featuredData[0]
+      : catalogData && catalogData.length > 0
+      ? catalogData[0]
+      : null;
+
+  const topSeller =
+    sellersData && sellersData.length > 0
+      ? sellersData[0]
+      : topFeaturedProduct?.sellerId;
+
+  const heroImage =
+    topFeaturedProduct?.images?.[0]?.url ||
+    'https://images.unsplash.com/photo-1578749556568-bc2c40e68b61?w=800&q=85';
+
+  const heroImageAlt = topFeaturedProduct?.title
+    ? `Handcrafted creation: ${topFeaturedProduct.title}`
+    : 'Authentic Indian Handcrafted Pottery & Crafts';
 
   const handleQuickAdd = (p: ProductItem, e: React.MouseEvent) => {
     e.preventDefault();
@@ -134,7 +176,7 @@ export const HomePage: React.FC = () => {
                 </a>
               </div>
 
-              {/* Trust Metrics Pill */}
+              {/* Value Propositions */}
               <div className="pt-6 grid grid-cols-3 gap-4 border-t border-stone-warm-300/60 max-w-md mx-auto lg:mx-0 text-left">
                 <div>
                   <p className="font-display font-black text-2xl text-terracotta-700">100%</p>
@@ -156,31 +198,64 @@ export const HomePage: React.FC = () => {
               <div className="relative mx-auto max-w-md lg:max-w-none">
                 <div className="aspect-[4/5] rounded-3xl overflow-hidden shadow-2xl border-4 border-white bg-stone-warm-200">
                   <img
-                    src="https://images.unsplash.com/photo-1578749556568-bc2c40e68b61?w=800&q=85"
-                    alt="Handmade Pottery Vase by Mrittika Studio"
+                    src={heroImage}
+                    alt={heroImageAlt}
                     className="w-full h-full object-cover hover:scale-105 transition-transform duration-700"
                   />
                 </div>
 
-                {/* Floating Artisan Card 1 */}
-                <div className="absolute -bottom-6 -left-6 bg-white/95 backdrop-blur-md rounded-2xl p-4 shadow-warm-xl border border-stone-warm-200 max-w-[240px] animate-in fade-in slide-in-from-bottom-4 duration-500">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-terracotta-100 flex items-center justify-center text-terracotta-600">
-                      <Store className="w-5 h-5" />
+                {/* Floating Real Artisan Card (Loaded dynamically from API) */}
+                {topSeller ? (
+                  <Link
+                    to={`/shop/${topSeller.slug}`}
+                    className="absolute -bottom-6 -left-6 bg-white/95 backdrop-blur-md rounded-2xl p-4 shadow-warm-xl border border-stone-warm-200 max-w-[260px] animate-in fade-in slide-in-from-bottom-4 duration-500 hover:border-terracotta-400 transition-colors group block"
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-full bg-terracotta-100 flex items-center justify-center text-terracotta-600 group-hover:bg-terracotta-600 group-hover:text-white transition-colors shrink-0 overflow-hidden">
+                        {topSeller.logoUrl ? (
+                          <img
+                            src={topSeller.logoUrl}
+                            alt={topSeller.shopName}
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <Store className="w-5 h-5" />
+                        )}
+                      </div>
+                      <div className="min-w-0">
+                        <h4 className="text-xs font-bold text-charcoal-900 truncate">
+                          {topSeller.shopName}
+                        </h4>
+                        <p className="text-[11px] text-stone-warm-600 flex items-center gap-1 truncate">
+                          <MapPin className="w-3 h-3 text-terracotta-500 shrink-0" />
+                          {topSeller.location || 'Verified Artisan • India'}
+                        </p>
+                      </div>
                     </div>
-                    <div>
-                      <h4 className="text-xs font-bold text-charcoal-900">Mrittika Studio</h4>
-                      <p className="text-[11px] text-stone-warm-600 flex items-center gap-1">
-                        <MapPin className="w-3 h-3 text-terracotta-500" /> Kolkata, WB
-                      </p>
+                    <p className="text-[11px] text-charcoal-700 mt-2 italic line-clamp-2">
+                      {topSeller.bio || 'Preserving living handcraft traditions.'}
+                    </p>
+                  </Link>
+                ) : (
+                  <div className="absolute -bottom-6 -left-6 bg-white/95 backdrop-blur-md rounded-2xl p-4 shadow-warm-xl border border-stone-warm-200 max-w-[260px] animate-in fade-in slide-in-from-bottom-4 duration-500">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-full bg-terracotta-100 flex items-center justify-center text-terracotta-600">
+                        <Store className="w-5 h-5" />
+                      </div>
+                      <div>
+                        <h4 className="text-xs font-bold text-charcoal-900">Direct from Artisans</h4>
+                        <p className="text-[11px] text-stone-warm-600 flex items-center gap-1">
+                          <MapPin className="w-3 h-3 text-terracotta-500" /> Across India
+                        </p>
+                      </div>
                     </div>
+                    <p className="text-[11px] text-charcoal-700 mt-2 italic">
+                      Connecting patrons directly with independent makers.
+                    </p>
                   </div>
-                  <p className="text-[11px] text-charcoal-700 mt-2 italic">
-                    &ldquo;Preserving 3 generations of terracotta pottery craft.&rdquo;
-                  </p>
-                </div>
+                )}
 
-                {/* Floating Badge 2 */}
+                {/* Floating Badge */}
                 <div className="absolute -top-4 -right-4 bg-charcoal-900 text-white rounded-2xl p-3 shadow-warm-xl border border-charcoal-800 flex items-center gap-2">
                   <Award className="w-4 h-4 text-ochre-400" />
                   <span className="text-xs font-bold tracking-wide">GI Craft Heritage</span>
@@ -232,7 +307,7 @@ export const HomePage: React.FC = () => {
         </div>
       </section>
 
-      {/* 3. FEATURED ARTISAN CREATIONS */}
+      {/* 3. FEATURED ARTISAN CREATIONS (Loaded from API) */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col sm:flex-row items-start sm:items-end justify-between gap-4 mb-8">
           <div>
@@ -266,7 +341,7 @@ export const HomePage: React.FC = () => {
             </div>
             <h4 className="text-lg font-bold text-charcoal-900">New creations arriving soon</h4>
             <p className="text-sm text-stone-warm-600 max-w-md mx-auto">
-              Our registered Indian creators are firing pottery and handcrafting exquisite pieces. Check out the catalog!
+              Our registered Indian creators are handcrafting exquisite pieces. Explore our full heritage catalog!
             </p>
             <Link to="/catalog">
               <Button size="md">Browse Catalog</Button>
@@ -328,16 +403,25 @@ export const HomePage: React.FC = () => {
                         {product.title}
                       </Link>
 
-                      {/* Ratings */}
-                      <div className="flex items-center gap-1 text-xs text-stone-warm-600">
-                        <Star className="w-3.5 h-3.5 fill-ochre-400 text-ochre-400" />
-                        <span className="font-bold text-charcoal-800">
-                          {product.rating ? product.rating.toFixed(1) : '4.9'}
-                        </span>
-                        <span className="text-stone-warm-500">
-                          ({product.reviewCount || 12})
-                        </span>
-                      </div>
+                      {/* Ratings / Authenticity Indicator */}
+                      {product.rating ? (
+                        <div className="flex items-center gap-1 text-xs text-stone-warm-600">
+                          <Star className="w-3.5 h-3.5 fill-ochre-400 text-ochre-400" />
+                          <span className="font-bold text-charcoal-800">
+                            {product.rating.toFixed(1)}
+                          </span>
+                          {product.reviewCount ? (
+                            <span className="text-stone-warm-500">
+                              ({product.reviewCount})
+                            </span>
+                          ) : null}
+                        </div>
+                      ) : (
+                        <div className="flex items-center gap-1 text-[11px] text-terracotta-700 font-medium">
+                          <Sparkles className="w-3 h-3" />
+                          <span>Handcrafted Original</span>
+                        </div>
+                      )}
                     </div>
 
                     <div className="pt-3 border-t border-stone-warm-100 flex items-center justify-between">
@@ -364,8 +448,11 @@ export const HomePage: React.FC = () => {
         )}
       </section>
 
-      {/* 4. MEET THE MASTER ARTISANS */}
-      <section className="bg-charcoal-900 text-white py-16 sm:py-24 rounded-3xl sm:rounded-[2.5rem] max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 overflow-hidden relative shadow-warm-2xl">
+      {/* 4. MEET THE MASTER ARTISANS (Loaded dynamically from API) */}
+      <section
+        id="featured-studios"
+        className="bg-charcoal-900 text-white py-16 sm:py-24 rounded-3xl sm:rounded-[2.5rem] max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 overflow-hidden relative shadow-warm-2xl"
+      >
         <div className="absolute top-0 right-0 w-96 h-96 bg-terracotta-600/10 rounded-full blur-3xl pointer-events-none" />
         <div className="relative z-10 space-y-12">
           <div className="text-center max-w-2xl mx-auto space-y-2">
@@ -380,101 +467,88 @@ export const HomePage: React.FC = () => {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 relative z-10">
-            {/* Studio 1: Mrittika Studio */}
-            <div className="bg-stone-warm-800/80 rounded-2xl p-6 sm:p-8 border border-stone-warm-700/60 backdrop-blur-sm flex flex-col justify-between space-y-6">
-              <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className="w-12 h-12 rounded-2xl bg-terracotta-600 flex items-center justify-center text-white shadow-warm-md">
-                      <Store className="w-6 h-6" />
-                    </div>
-                    <div>
-                      <h4 className="text-lg font-bold text-white font-display">Mrittika Studio</h4>
-                      <p className="text-xs text-stone-warm-400 flex items-center gap-1">
-                        <MapPin className="w-3.5 h-3.5 text-terracotta-400" /> Kumartuli &bull; Kolkata, WB
-                      </p>
-                    </div>
-                  </div>
-                  <Badge variant="terracotta" size="sm">Master Potter</Badge>
-                </div>
-
-                <p className="text-xs text-stone-warm-300 leading-relaxed">
-                  Founded by Debjani Mukherjee, Mrittika Studio specialises in hand-thrown terracotta dinnerware, natural unglazed kulhars, and intricate Bankura clay sculptures made using river Ganges clay.
-                </p>
-
-                <div className="flex flex-wrap gap-2 pt-2">
-                  <span className="text-[11px] px-2.5 py-1 rounded-full bg-stone-warm-700/60 text-stone-warm-300 border border-stone-warm-600">
-                    Terracotta Pottery
-                  </span>
-                  <span className="text-[11px] px-2.5 py-1 rounded-full bg-stone-warm-700/60 text-stone-warm-300 border border-stone-warm-600">
-                    Lead-Free Food Safe
-                  </span>
-                  <span className="text-[11px] px-2.5 py-1 rounded-full bg-stone-warm-700/60 text-stone-warm-300 border border-stone-warm-600">
-                    Wheel Thrown
-                  </span>
-                </div>
-              </div>
-
-              <Link to="/shop/mrittika-studio">
-                <Button
-                  variant="outline"
-                  size="md"
-                  className="w-full text-stone-warm-100 border-stone-warm-600 hover:bg-stone-warm-700 hover:border-stone-warm-500"
-                  rightIcon={<ArrowRight className="w-4 h-4" />}
+          {isSellersLoading ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 relative z-10">
+              {[1, 2].map((i) => (
+                <div
+                  key={i}
+                  className="bg-stone-warm-800/50 rounded-2xl p-8 border border-stone-warm-700/60 h-64 animate-pulse"
+                />
+              ))}
+            </div>
+          ) : sellersData && sellersData.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 relative z-10">
+              {sellersData.map((seller, idx) => (
+                <div
+                  key={seller._id}
+                  className="bg-stone-warm-800/80 rounded-2xl p-6 sm:p-8 border border-stone-warm-700/60 backdrop-blur-sm flex flex-col justify-between space-y-6 hover:border-stone-warm-500 transition-colors"
                 >
-                  Visit Mrittika Studio &rarr;
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <div
+                          className={`w-12 h-12 rounded-2xl ${
+                            idx % 2 === 0 ? 'bg-terracotta-600' : 'bg-ochre-600'
+                          } flex items-center justify-center text-white shadow-warm-md overflow-hidden`}
+                        >
+                          {seller.logoUrl ? (
+                            <img
+                              src={seller.logoUrl}
+                              alt={seller.shopName}
+                              className="w-full h-full object-cover"
+                            />
+                          ) : (
+                            <Store className="w-6 h-6" />
+                          )}
+                        </div>
+                        <div>
+                          <h4 className="text-lg font-bold text-white font-display">
+                            {seller.shopName}
+                          </h4>
+                          <p className="text-xs text-stone-warm-400 flex items-center gap-1">
+                            <MapPin className="w-3.5 h-3.5 text-terracotta-400" />
+                            {seller.location || 'Verified Artisan • India'}
+                          </p>
+                        </div>
+                      </div>
+                      <Badge variant={idx % 2 === 0 ? 'terracotta' : 'ochre'} size="sm">
+                        Verified Studio
+                      </Badge>
+                    </div>
+
+                    <p className="text-xs text-stone-warm-300 leading-relaxed line-clamp-3">
+                      {seller.bio ||
+                        'Independent master craft studio handcrafting authentic artisanal goods with fair-trade compensation.'}
+                    </p>
+                  </div>
+
+                  <Link to={`/shop/${seller.slug}`}>
+                    <Button
+                      variant="outline"
+                      size="md"
+                      className="w-full text-stone-warm-100 border-stone-warm-600 hover:bg-stone-warm-700 hover:border-stone-warm-500"
+                      rightIcon={<ArrowRight className="w-4 h-4" />}
+                    >
+                      Visit {seller.shopName} &rarr;
+                    </Button>
+                  </Link>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-12 bg-stone-warm-800/40 rounded-2xl border border-stone-warm-700 p-8 space-y-4 max-w-xl mx-auto">
+              <Store className="w-12 h-12 text-terracotta-400 mx-auto" />
+              <h4 className="text-lg font-bold text-white">Artisan Studios Joining Soon</h4>
+              <p className="text-xs text-stone-warm-300">
+                Independent Indian creators are setting up their craft storefronts. Browse our curated catalog to see available creations.
+              </p>
+              <Link to="/catalog">
+                <Button size="sm" variant="primary">
+                  Explore Catalog
                 </Button>
               </Link>
             </div>
-
-            {/* Studio 2: Shantiniketan Leather */}
-            <div className="bg-stone-warm-800/80 rounded-2xl p-6 sm:p-8 border border-stone-warm-700/60 backdrop-blur-sm flex flex-col justify-between space-y-6">
-              <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className="w-12 h-12 rounded-2xl bg-ochre-600 flex items-center justify-center text-white shadow-warm-md">
-                      <Store className="w-6 h-6" />
-                    </div>
-                    <div>
-                      <h4 className="text-lg font-bold text-white font-display">Shantiniketan Leather</h4>
-                      <p className="text-xs text-stone-warm-400 flex items-center gap-1">
-                        <MapPin className="w-3.5 h-3.5 text-ochre-400" /> Bolpur &bull; Shantiniketan, WB
-                      </p>
-                    </div>
-                  </div>
-                  <Badge variant="ochre" size="sm">GI Tagged Craft</Badge>
-                </div>
-
-                <p className="text-xs text-stone-warm-300 leading-relaxed">
-                  Led by master craftsman Biren Ghosh, crafting authentic GI-tagged vegetable-tanned sheepskin leather bags, wallets, and embossed journals inspired by Rabindranath Tagore&apos;s Visva-Bharati aesthetic.
-                </p>
-
-                <div className="flex flex-wrap gap-2 pt-2">
-                  <span className="text-[11px] px-2.5 py-1 rounded-full bg-stone-warm-700/60 text-stone-warm-300 border border-stone-warm-600">
-                    Hand-Batik Dyeing
-                  </span>
-                  <span className="text-[11px] px-2.5 py-1 rounded-full bg-stone-warm-700/60 text-stone-warm-300 border border-stone-warm-600">
-                    Vegetable Tanned
-                  </span>
-                  <span className="text-[11px] px-2.5 py-1 rounded-full bg-stone-warm-700/60 text-stone-warm-300 border border-stone-warm-600">
-                    Tagore Heritage
-                  </span>
-                </div>
-              </div>
-
-              <Link to="/shop/shantiniketan-leather">
-                <Button
-                  variant="outline"
-                  size="md"
-                  className="w-full text-stone-warm-100 border-stone-warm-600 hover:bg-stone-warm-700 hover:border-stone-warm-500"
-                  rightIcon={<ArrowRight className="w-4 h-4" />}
-                >
-                  Visit Shantiniketan Studio &rarr;
-                </Button>
-              </Link>
-            </div>
-          </div>
+          )}
         </div>
       </section>
 
