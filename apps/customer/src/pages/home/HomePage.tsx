@@ -100,11 +100,6 @@ export const HomePage: React.FC = () => {
       ? catalogData[0]
       : null;
 
-  const topSeller =
-    sellersData && sellersData.length > 0
-      ? sellersData[0]
-      : topFeaturedProduct?.sellerId;
-
   const heroImage =
     topFeaturedProduct?.images?.[0]?.url ||
     'https://images.unsplash.com/photo-1578749556568-bc2c40e68b61?w=800&q=85';
@@ -203,57 +198,6 @@ export const HomePage: React.FC = () => {
                     className="w-full h-full object-cover hover:scale-105 transition-transform duration-700"
                   />
                 </div>
-
-                {/* Floating Real Artisan Card (Loaded dynamically from API) */}
-                {topSeller ? (
-                  <Link
-                    to={`/shop/${topSeller.slug}`}
-                    className="absolute -bottom-6 -left-6 bg-white/95 backdrop-blur-md rounded-2xl p-4 shadow-warm-xl border border-stone-warm-200 max-w-[260px] animate-in fade-in slide-in-from-bottom-4 duration-500 hover:border-terracotta-400 transition-colors group block"
-                  >
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-full bg-terracotta-100 flex items-center justify-center text-terracotta-600 group-hover:bg-terracotta-600 group-hover:text-white transition-colors shrink-0 overflow-hidden">
-                        {topSeller.logoUrl ? (
-                          <img
-                            src={topSeller.logoUrl}
-                            alt={topSeller.shopName}
-                            className="w-full h-full object-cover"
-                          />
-                        ) : (
-                          <Store className="w-5 h-5" />
-                        )}
-                      </div>
-                      <div className="min-w-0">
-                        <h4 className="text-xs font-bold text-charcoal-900 truncate">
-                          {topSeller.shopName}
-                        </h4>
-                        <p className="text-[11px] text-stone-warm-600 flex items-center gap-1 truncate">
-                          <MapPin className="w-3 h-3 text-terracotta-500 shrink-0" />
-                          {topSeller.location || 'Verified Artisan • India'}
-                        </p>
-                      </div>
-                    </div>
-                    <p className="text-[11px] text-charcoal-700 mt-2 italic line-clamp-2">
-                      {topSeller.bio || 'Preserving living handcraft traditions.'}
-                    </p>
-                  </Link>
-                ) : (
-                  <div className="absolute -bottom-6 -left-6 bg-white/95 backdrop-blur-md rounded-2xl p-4 shadow-warm-xl border border-stone-warm-200 max-w-[260px] animate-in fade-in slide-in-from-bottom-4 duration-500">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-full bg-terracotta-100 flex items-center justify-center text-terracotta-600">
-                        <Store className="w-5 h-5" />
-                      </div>
-                      <div>
-                        <h4 className="text-xs font-bold text-charcoal-900">Direct from Artisans</h4>
-                        <p className="text-[11px] text-stone-warm-600 flex items-center gap-1">
-                          <MapPin className="w-3 h-3 text-terracotta-500" /> Across India
-                        </p>
-                      </div>
-                    </div>
-                    <p className="text-[11px] text-charcoal-700 mt-2 italic">
-                      Connecting patrons directly with independent makers.
-                    </p>
-                  </div>
-                )}
 
                 {/* Floating Badge */}
                 <div className="absolute -top-4 -right-4 bg-charcoal-900 text-white rounded-2xl p-3 shadow-warm-xl border border-charcoal-800 flex items-center gap-2">
