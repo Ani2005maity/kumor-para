@@ -26,5 +26,8 @@
     "crafts"
   ],
   "author": "Kumor Para Team",
-  "license": "ISC"
+  "license": "ISC",
+  "optionalDependencies": {
+    "@rollup/rollup-linux-x64-gnu": "^4.63.4"
+  }
 }
