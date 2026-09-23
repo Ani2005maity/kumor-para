@@ -1,51 +1,33 @@
-import nodemailer, { type Transporter } from 'nodemailer';
+import { Resend } from 'resend';
 import { IEmailOtpProvider, SendEmailOtpParams, OtpSendResult } from './OtpProvider.js';
 import { AppError } from '../../middleware/errorHandler.js';
 
 export class EmailOtpProvider implements IEmailOtpProvider {
   private fromEmail: string;
-  private transporter: Transporter | null = null;
+  private resendClient: Resend | null = null;
 
   constructor() {
-    this.fromEmail = process.env.EMAIL_FROM || 'Kumor Para Security <security@kumorpara.com>';
+    this.fromEmail = process.env.EMAIL_FROM || 'Kumor Para <onboarding@resend.dev>';
   }
 
-  private getTransporter(): Transporter {
-    if (this.transporter) return this.transporter;
+  private getClient(): Resend {
+    if (this.resendClient) return this.resendClient;
 
-    const host = process.env.SMTP_HOST;
-    const port = Number(process.env.SMTP_PORT) || 587;
-    const user = process.env.SMTP_USER;
-    const pass = process.env.SMTP_PASS;
-    const isSecure = process.env.SMTP_SECURE === 'true' || port === 465;
+    const apiKey = process.env.RESEND_API_KEY?.trim();
 
-    if (!host || !user || !pass) {
-      const missing: string[] = [];
-      if (!host) missing.push('SMTP_HOST');
-      if (!user) missing.push('SMTP_USER');
-      if (!pass) missing.push('SMTP_PASS');
-
+    if (!apiKey) {
       throw new AppError(
-        `Real Email OTP provider is active, but required SMTP credentials (${missing.join(', ')}) are missing in server .env. Please configure SMTP credentials or set OTP_PROVIDER=mock for local development.`,
+        'Real Email OTP provider is active, but RESEND_API_KEY is missing in server environment. Please configure RESEND_API_KEY in server .env / Render or set OTP_PROVIDER=mock for local development.',
         500
       );
     }
 
-    this.transporter = nodemailer.createTransport({
-      host,
-      port,
-      secure: isSecure,
-      auth: {
-        user,
-        pass,
-      },
-    });
-
-    return this.transporter;
+    this.resendClient = new Resend(apiKey);
+    return this.resendClient;
   }
 
   async sendEmailOtp(params: SendEmailOtpParams): Promise<OtpSendResult> {
-    const transporter = this.getTransporter();
+    const resend = this.getClient();
 
     const subject =
       params.purpose === 'registration'
@@ -100,7 +82,7 @@ export class EmailOtpProvider implements IEmailOtpProvider {
     const textBody = `${greeting}\n\nYour Kumor Para verification code is: ${params.otp}\nValid for 5 minutes.\nDo not share this code with anyone.`;
 
     try {
-      const info = await transporter.sendMail({
+      const response = await resend.emails.send({
         from: this.fromEmail,
         to: params.email,
         subject,
@@ -108,22 +90,36 @@ export class EmailOtpProvider implements IEmailOtpProvider {
         html,
       });
 
+      if (response.error) {
+        console.error(
+          `[EmailOtpProvider] Resend API error for ${params.email}:`,
+          response.error.message
+        );
+        throw new AppError(
+          `Failed to deliver Email verification code via Resend: ${response.error.message}`,
+          502
+        );
+      }
+
+      const messageId = response.data?.id;
+
       console.log(
-        `[EmailOtpProvider] Real Email OTP dispatched to ${params.email} (MessageID: ${info.messageId})`
+        `[EmailOtpProvider] Real Email OTP dispatched to ${params.email} via Resend (Message ID: ${messageId || 'ok'})`
       );
 
       return {
         success: true,
-        messageId: info.messageId,
-        provider: 'smtp-nodemailer',
+        messageId,
+        provider: 'resend',
       };
-    } catch (smtpErr: any) {
+    } catch (err: any) {
+      if (err instanceof AppError) throw err;
       console.error(
-        `[EmailOtpProvider] SMTP delivery failed for ${params.email}:`,
-        smtpErr.message
+        `[EmailOtpProvider] Resend delivery exception for ${params.email}:`,
+        err.message
       );
       throw new AppError(
-        `Failed to deliver Email verification code: ${smtpErr.message || 'SMTP connection failed'}. Please check your SMTP server credentials in server .env.`,
+        `Failed to deliver Email verification code: ${err.message || 'Resend service error'}. Please check your RESEND_API_KEY in server environment.`,
         502
       );
     }

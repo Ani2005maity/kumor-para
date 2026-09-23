@@ -17,6 +17,7 @@
     "build:server": "npm --workspace=@kumorpara/shared run build && npm --workspace=kumor-para-server run build",
     "start:server": "npm --workspace=kumor-para-server start",
     "seed": "npm --workspace=server run seed",
+    "create:production-admin": "npm --workspace=server run create:production-admin",
     "lint": "npm --workspaces run lint"
   },
   "keywords": [
